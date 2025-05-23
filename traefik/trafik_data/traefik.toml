@@ -1,0 +1,53 @@
+debug = true
+logLevel = "DEBUG"
+defaultEntryPoints = ["https", "http"]
+
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+    [entryPoints.web.http.redirections]
+      [entryPoints.web.http.redirections.entryPoint]
+        to = "websecure"
+  [entryPoints.websecure]
+    address = ":443"
+    [entryPoints.websecure.http.tls]
+      certResolver = "lets-encrypt"
+      # Explicitly reference the TLS options profile
+      options = "modern"
+
+[api]
+  dashboard = true
+  insecure = true
+
+[providers.docker]
+  endpoint = "unix:///var/run/docker.sock"
+  watch = true
+  exposedByDefault = false
+  network = "traefik-net"
+
+[certificatesResolvers.lets-encrypt.acme]
+  email = "infra-alerts@logicwind.com"
+  storage = "acme.json"
+  [certificatesResolvers.lets-encrypt.acme.httpChallenge]
+    entryPoint = "web"
+
+# TLS options configuration - this is the correct format
+[tls]
+  [tls.options]
+    [tls.options.modern]
+      minVersion = "VersionTLS13"
+      sniStrict = true
+      cipherSuites = [
+        "TLS_AES_128_GCM_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_CHACHA20_POLY1305_SHA256"
+      ]
+    # Also update default for any backends that don't specify options
+    [tls.options.default]
+      minVersion = "VersionTLS13"
+      sniStrict = true
+      cipherSuites = [
+        "TLS_AES_128_GCM_SHA256",
+        "TLS_AES_256_GCM_SHA384",
+        "TLS_CHACHA20_POLY1305_SHA256"
+      ]

@@ -1,0 +1,75 @@
+config:
+  target: "https://codepush-proxy-old-server-feature.appsonair.com"
+
+  http:
+    timeout: 120
+
+  payload:
+    path: "./data.csv"
+    fields:
+      - deployment_key
+      - app_version
+    order: sequence
+    skipHeader: true
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+  phases:
+    - duration: 30
+      arrivalRate: 10
+      rampTo: 20
+      name: "Phase 1 - System Wakeup (Linear)"
+
+    - duration: 45
+      arrivalRate: 20
+      rampTo: 40
+      name: "Phase 2 - Early Warmup (Linear)"
+
+    - duration: 60
+      arrivalRate: 40
+      rampTo: 60
+      name: "Phase 3 - Moderate Load (Linear)"
+
+    - duration: 60
+      arrivalRate: 60
+      rampTo: 90
+      name: "Phase 4 - Heavier Load (Linear)"
+
+    - duration: 75
+      arrivalRate: 90
+      rampTo: 120
+      name: "Phase 5 - Full Utilization (Linear)"
+
+    # - duration: 90
+    #   arrivalRate: 120
+    #   rampTo: 180
+    #   name: "Phase 6 - Exponential Surge I"
+
+    # - duration: 90
+    #   arrivalRate: 180
+    #   rampTo: 300
+    #   name: "Phase 7 - Exponential Surge II"
+
+    # - duration: 120
+    #   arrivalRate: 300
+    #   rampTo: 600
+    #   name: "Phase 8 - Stress Overload I"
+
+    # - duration: 150
+    #   arrivalRate: 600
+    #   rampTo: 1200
+    #   name: "Phase 9 - Stress Overload II"
+
+    # - duration: 180
+    #   arrivalRate: 1200
+    #   rampTo: 1200
+    #   name: "Phase 10 - Sustained Max Load"
+
+
+scenarios:
+  - name: "Dynamic CodePush Update Check"
+    flow:
+      - get:
+          url: "/v0.1/public/codepush/update_check?deployment_key={{ deployment_key }}&app_version={{ app_version }}"
