@@ -1,12 +1,12 @@
 version: "3"
 services:
   appsonair-graphql-server-dev:
-    image: logicwind/appsonair-graphql-server-v2:dev
+    image: shreegopal/nginx:dev
     container_name: appsonair-graphql-server-dev
     restart: always
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.appsonair-dev-server.rule=Host(`server.dev.appsonair.com`)"
+      - "traefik.http.routers.appsonair-dev-server.rule=Host(`server.dev.xyz.com`)"
       - "traefik.http.services.appsonair-dev-server.loadbalancer.server.port=3005"
       - "traefik.http.routers.appsonair-dev-server.tls.certresolver=lets-encrypt"
       - "traefik.http.routers.appsonair-dev-server.tls=true"
@@ -15,8 +15,8 @@ services:
     logging:
       driver: "fluentd"
       options:
-        fluentd-address: fluentd.logicwind.co:24224
-        tag: appsonair-graphql-server-v2-dev
+        fluentd-address: 
+        tag: 
         fluentd-async-connect: "true"
     networks:
       - traefik-net
